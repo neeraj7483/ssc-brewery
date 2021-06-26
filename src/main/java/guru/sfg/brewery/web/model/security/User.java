@@ -4,10 +4,12 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -32,10 +34,10 @@ public class User implements UserDetails, CredentialsContainer {
 	private final boolean accountNonLocked;
 	private final boolean credentialsNonExpired;
 	private final boolean enabled;
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.MERGE)
 	@JoinTable(name = "USER_AUTHORITIES", joinColumns = {
-			@JoinColumn(referencedColumnName = "USERNAME") }, inverseJoinColumns = {
-					@JoinColumn(referencedColumnName = "") })
+			@JoinColumn(name = "user", referencedColumnName = "username") }, inverseJoinColumns = {
+					@JoinColumn(name = "authority", referencedColumnName = "authority") })
 	private final Set<Authority> authorities;
 
 	public User() {
@@ -43,7 +45,7 @@ public class User implements UserDetails, CredentialsContainer {
 		this.accountNonExpired = true;
 		this.credentialsNonExpired = true;
 		this.accountNonLocked = true;
-		this.authorities = Collections.emptySet();
+		this.authorities = new HashSet<>();
 	}
 
 	@SuppressWarnings("unchecked")
